@@ -37,7 +37,7 @@
 
       <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModal" aria-hidden="true">
         <div class="modal-dialog w-100">
-            <form action="" method="POST" id="nova_atividade">
+            <form action="" method="POST" class="frm_atividade">
                 <div class="modal-content">
                 <div class="modal-header purple">
                   <h5 class="modal-title text-white">Criação de atividade esportiva</h5>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="">
                             <label class="form-label">De:</label>
-                            <input type="date" name="" id="" class="form-control w-50" name="date_activity">
+                            <input type="date"  name="date_activity" class="form-control w-50">
                         </div>
                         <div class="row">
                             <div class="col-3">
@@ -68,7 +68,7 @@
                                 <select class="form-select">
                                     <option selected>Selecione</option>
                                 </select>
-                            </div>
+                        </div>
                             <div class="form-check col-4 mt-3">
                                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                                 <label class="form-check-label" for="flexRadioDefault1">Não se repete</label>
@@ -83,7 +83,7 @@
     
                     </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn_salvar purple text-white text-decoration-none">Salvar</button>
+                  <button type="submit" class="btn btn_salvar purple text-white text-decoration-none">Salvar</button>
                 </div>
               </div>
             </form>
@@ -91,57 +91,95 @@
       </div>
 
       <div id="calendar" class="calendar">
-
       </div>
+      <div id="resp"></div>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+crossorigin="anonymous"
+referrerpolicy="no-referrer"
+></script>
+
 <script>
+    
+    function adicionaZero(numero){
+            if (numero <= 9) 
+                return "0" + numero;
+            else
+                return numero; 
+        }
+            // let dataAtual = new Date("2020-1-29"); //29/01/2020
+            // saída: 29/01/2020
             
-        document.addEventListener('DOMContentLoaded', function() {
+            
+            document.addEventListener('DOMContentLoaded', async function() {
+                
+            let atividade = await $.get('http://localhost:8000/api/home');
+                
+            let eventos = $.map(atividade, function (a) {
+                let name_event = a.name_event
+                let date_activity = a.date_activity
+    
+            // let responseDate = moment(date_activity ).format('YYYY-MM-DD');
+            // console.log('title = '+ name_event + ' data: ' + responseDate)
+            
+        });
+            
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                locale: 'pt-br',
-                initialView: 'dayGridMonth',
-                events: [
-                    {
-                        title: 'Evento 01',
-                        start: '2022-08-18',
-                        end: '2022-08-19',
-                    },
-                    {
-                        title: 'Evento 02',
-                        start: '2022-08-18',
-                        end: '2022-08-19',
-                    }
-                ]
+            locale: 'pt-br',
+            initialView: 'dayGridMonth',
+            events: [
+                {  
+                    title: name_event,
+                    start: responseDate,
+                },
+            ]
+            // eventSources: [
+            //     // your event source
+            //     {
+                //     url: 'http://localhost:8000/api/home', // use the `url` property
+                //     color: 'yellow',    // an option!
+                //     textColor: 'black'  // an option!
+                //     }
+                // ]
             });
             calendar.render();
-        });
-
+    });
+        
         $(document).ready(function(){
 
-            $('#nova_atividade').submit(function(){
-                    //serialize() junta todos os dados do form e deixa pronto pra ser enviado pelo ajax
-                    var dados = jQuery(this).serialize();
-                    $.ajax({
-                        type: "POST",
-                        url: "http://localhost:8000/api/cadastro",
-                        data: dados,
-                        dataType: 'json',
-                        success: function(data)
-                        {   
-                            if(data == "1"){
-                                alert("Cadastrado com sucesso! ");
-                                //atualiza a página!
-                                location.reload();
-                            }else{
-                                alert("Houve algum problema.. ");
-                            }
-                        }
-                    });                
-                    return false;
-                });	
-        })
+            $('.frm_atividade').submit(function(e) {
+            e.preventDefault();
+            const name= $('input[name="name_event"]').val();
+            const description = $('textarea[name="description"]').val();
+            const date_activity = $('input[name="date_activity"]').val();
+            $.ajax({
+                url: 'http://localhost:8000/api/cadastro', 
+                type: 'POST',
+                data: {name_event: name, description: description, date_activity: date_activity},
+                success: function(response) {
+                    alert('Atividade cadastrada com sucesso!')
+                    location.reload()
+                },
+                error: function(xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+            return false;
+    });
+
+
+
+
+
+
+
+
+
+})
 
         
 </script>
