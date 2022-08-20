@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "fullcalendar": "^5.11.2"
+    "fullcalendar": "^5.11.2",
+    "sweetalert2": "^11.4.28"
   }
 }

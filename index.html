@@ -10,6 +10,7 @@
     
     <link href='node_modules/fullcalendar/main.css' rel='stylesheet' />
     <script src='node_modules/fullcalendar/main.js'></script>
+    <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <title>Document</title>
 </head>
 <style>
@@ -26,7 +27,7 @@
 <body>    
     <nav class="navbar navbar-expand-lg navbar-light purple">
         <div class="container-fluid">
-          <a class="navbar-brand text-white" href="#">Agenda</a>
+          <a class="navbar-brand text-white" href="/">Agenda</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -37,7 +38,7 @@
 
       <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModal" aria-hidden="true">
         <div class="modal-dialog w-100">
-            <form action="" method="POST" class="frm_atividade">
+            <form action="" method="POST" class="frm_activity">
                 <div class="modal-content">
                 <div class="modal-header purple">
                   <h5 class="modal-title text-white">Criação de atividade esportiva</h5>
@@ -46,7 +47,7 @@
                     <div class="modal-body">
                         <div>
                             <label class="form-label">Evento</label>
-                            <input type="text" class="form-control" maxlength="45" name="name_event">
+                            <input type="text" class="form-control" maxlength="30" name="name_event" required>
                         </div>
                         <div>
                             <label class="form-label">Descrição</label>
@@ -54,20 +55,22 @@
                         </div>
                         <div class="">
                             <label class="form-label">De:</label>
-                            <input type="date"  name="date_activity" class="form-control w-50">
+                            <input type="date"  name="date_activity" id="date_activity" class="form-control w-50" required>
                         </div>
                         <div class="row">
                             <div class="col-3">
                                 <label class="form-label">Inicio:</label>
-                                <select class="form-select">
+                                <input type="time" name="start" id="start" required>
+                                <!-- <select class="form-select">
                                     <option selected>Selecione</option>
-                                </select>
+                                </select> -->
                             </div>
                             <div class="col-3">
                                 <label class="form-label">Término:</label>
-                                <select class="form-select">
+                                <input type="time" name="end" id="end" required>
+                                <!-- <select class="form-select">
                                     <option selected>Selecione</option>
-                                </select>
+                                </select> -->
                         </div>
                             <div class="form-check col-4 mt-3">
                                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
@@ -103,66 +106,103 @@ referrerpolicy="no-referrer"
 ></script>
 
 <script>
-    
-    function adicionaZero(numero){
-            if (numero <= 9) 
-                return "0" + numero;
-            else
-                return numero; 
-        }
-            // let dataAtual = new Date("2020-1-29"); //29/01/2020
-            // saída: 29/01/2020
+
+
+
+        // async function fecthEvents();
+        // function formatEvents();
+
+        document.addEventListener('DOMContentLoaded',async function() {
+            var calendarEl = document.getElementById('calendar');
             
-            
-            document.addEventListener('DOMContentLoaded', async function() {
-                
             let atividade = await $.get('http://localhost:8000/api/home');
-                
+            
             let eventos = $.map(atividade, function (a) {
+
+                let id_group = a.id_group
                 let name_event = a.name_event
                 let date_activity = a.date_activity
-    
-            // let responseDate = moment(date_activity ).format('YYYY-MM-DD');
-            // console.log('title = '+ name_event + ' data: ' + responseDate)
-            
-        });
-            
-            var calendarEl = document.getElementById('calendar');
+                let start = a.start
+                let end = a.end
+                console.log(name_event, date_activity, start, end)
+                
+                                
+            let events = {
+                groupId: id_group,
+                title: name_event,
+                start : date_activity+'T'+start,
+                end: date_activity+'T'+end,
+                color: '#cccc00',
+                // rendering: 'inverse-background'
+            }
+
+            return events
+
+            })
             var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'pt-br',
             initialView: 'dayGridMonth',
-            events: [
-                {  
-                    title: name_event,
-                    start: responseDate,
-                },
-            ]
-            // eventSources: [
-            //     // your event source
-            //     {
-                //     url: 'http://localhost:8000/api/home', // use the `url` property
-                //     color: 'yellow',    // an option!
-                //     textColor: 'black'  // an option!
-                //     }
-                // ]
-            });
-            calendar.render();
-    });
+            locale: 'pt-br',
+            eventLimit: true,
+            buttonText: {
+                today: 'hoje'
+            },
+
+            dateClick: function(info){
+                if(info.view.type == 'dayGridMonth'){
+                    calendar.changeView('timeGrid',info.dateStr)
+                }
+            },
+            events: eventos
+        });
+        calendar.render();
+        });
         
         $(document).ready(function(){
 
-            $('.frm_atividade').submit(function(e) {
+            // $('.frm_activity').submit(async function (e) { 
+            //     e.preventDefault();
+            //     let atividade = await $.get('http://localhost:8000/api/home');
+            
+            //     $.map(atividade, function (a) { 
+            //         let date_activity = a.date_activity
+            //         let start = a.start
+                    
+            //         let date = $('#date_activity').val()
+            //         let start_form = $('#start').val()
+
+            //         if(date_activity == date && start == start_form){
+            //             Swal.fire(
+            //             'Já possui um evento marcado para está data',
+            //             'error'
+            //         )
+
+            //         }
+            //     })
+            // });
+
+
+            $('.frm_activity').submit(function(e) {
             e.preventDefault();
             const name= $('input[name="name_event"]').val();
             const description = $('textarea[name="description"]').val();
             const date_activity = $('input[name="date_activity"]').val();
+            const start = $('input[name="start"]').val();
+            const end = $('input[name="end"]').val();
             $.ajax({
                 url: 'http://localhost:8000/api/cadastro', 
                 type: 'POST',
-                data: {name_event: name, description: description, date_activity: date_activity},
+                data: {name_event: name, description: description, date_activity: date_activity, start: start, end: end},
                 success: function(response) {
-                    alert('Atividade cadastrada com sucesso!')
-                    location.reload()
+                    // alert('Atividade cadastrada com sucesso!')
+                    Swal.fire(
+                        'Atividade registrada!',
+                        name + ' no dia ' + moment(date_activity).format('DD/MM/YYYY') 
+                        + ' as ' + start + ' até ' + end,
+                        'success'
+                    )
+                    setTimeout([
+                        location.reload()
+                    ],2000)
                 },
                 error: function(xhr, status, error) {
                     alert(xhr.responseText);
