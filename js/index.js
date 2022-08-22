@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded',async function() {
         var calendarEl = document.getElementById('calendar');
         let atividade = await $.get('http://localhost:8000/api/home');
@@ -35,9 +36,8 @@ document.addEventListener('DOMContentLoaded',async function() {
     });
     calendar.render();
     });
-    
-    $(document).ready(function(){
 
+    $(function(){
         // let date = $('#date_activity').val()
         // let start_form = $('#start').val()
         // let end_form = $('#end').val()

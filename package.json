@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "bootstrap": "^5.2.0",
     "fullcalendar": "^5.11.2",
     "jquery": "^3.6.0",
+    "moment": "^2.29.4",
     "sweetalert2": "^11.4.28"
   }
 }
