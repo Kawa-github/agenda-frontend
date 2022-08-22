@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
@@ -11,19 +12,9 @@
     <link href='node_modules/fullcalendar/main.css' rel='stylesheet' />
     <script src='node_modules/fullcalendar/main.js'></script>
     <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
-    <title>Document</title>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <title>Teste</title>
 </head>
-<style>
-    .purple{
-        background-color: #8b008b;
-    }
-
-    .calendar{
-        width: 100%;
-        padding: 20px;
-    }
-
-</style>
 <body>    
     <nav class="navbar navbar-expand-lg navbar-light purple">
         <div class="container-fluid">
@@ -35,7 +26,6 @@
           </div>
         </div>
       </nav>
-
       <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModal" aria-hidden="true">
         <div class="modal-dialog w-100">
             <form action="" method="POST" class="frm_activity">
@@ -61,16 +51,10 @@
                             <div class="col-3">
                                 <label class="form-label">Inicio:</label>
                                 <input type="time" name="start" id="start" required>
-                                <!-- <select class="form-select">
-                                    <option selected>Selecione</option>
-                                </select> -->
                             </div>
                             <div class="col-3">
                                 <label class="form-label">Término:</label>
                                 <input type="time" name="end" id="end" required>
-                                <!-- <select class="form-select">
-                                    <option selected>Selecione</option>
-                                </select> -->
                         </div>
                             <div class="form-check col-4 mt-3">
                                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
@@ -83,144 +67,22 @@
                                 <input type="range" class="form-range w-25" min="0" max="5">
                             </div>
                         </div>
-    
                     </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn_salvar purple text-white text-decoration-none">Salvar</button>
+                  <button type="submit" class="btn btn_save purple text-white text-decoration-none" style="    background-color: #8b008b;">Salvar</button>
                 </div>
               </div>
             </form>
         </div>
       </div>
-
-      <div id="calendar" class="calendar">
-      </div>
+      <div id="calendar" class="calendar"></div>
       <div id="resp"></div>
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script
 src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
 integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
 crossorigin="anonymous"
 referrerpolicy="no-referrer"
 ></script>
-
-<script>
-
-
-
-        // async function fecthEvents();
-        // function formatEvents();
-
-        document.addEventListener('DOMContentLoaded',async function() {
-            var calendarEl = document.getElementById('calendar');
-            
-            let atividade = await $.get('http://localhost:8000/api/home');
-            
-            let eventos = $.map(atividade, function (a) {
-
-                let id_group = a.id_group
-                let name_event = a.name_event
-                let date_activity = a.date_activity
-                let start = a.start
-                let end = a.end
-                console.log(name_event, date_activity, start, end)
-                
-                                
-            let events = {
-                groupId: id_group,
-                title: name_event,
-                start : date_activity+'T'+start,
-                end: date_activity+'T'+end,
-                color: '#cccc00',
-                // rendering: 'inverse-background'
-            }
-
-            return events
-
-            })
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'pt-br',
-            eventLimit: true,
-            buttonText: {
-                today: 'hoje'
-            },
-
-            dateClick: function(info){
-                if(info.view.type == 'dayGridMonth'){
-                    calendar.changeView('timeGrid',info.dateStr)
-                }
-            },
-            events: eventos
-        });
-        calendar.render();
-        });
-        
-        $(document).ready(function(){
-
-            // $('.frm_activity').submit(async function (e) { 
-            //     e.preventDefault();
-            //     let atividade = await $.get('http://localhost:8000/api/home');
-            
-            //     $.map(atividade, function (a) { 
-            //         let date_activity = a.date_activity
-            //         let start = a.start
-                    
-            //         let date = $('#date_activity').val()
-            //         let start_form = $('#start').val()
-
-            //         if(date_activity == date && start == start_form){
-            //             Swal.fire(
-            //             'Já possui um evento marcado para está data',
-            //             'error'
-            //         )
-
-            //         }
-            //     })
-            // });
-
-
-            $('.frm_activity').submit(function(e) {
-            e.preventDefault();
-            const name= $('input[name="name_event"]').val();
-            const description = $('textarea[name="description"]').val();
-            const date_activity = $('input[name="date_activity"]').val();
-            const start = $('input[name="start"]').val();
-            const end = $('input[name="end"]').val();
-            $.ajax({
-                url: 'http://localhost:8000/api/cadastro', 
-                type: 'POST',
-                data: {name_event: name, description: description, date_activity: date_activity, start: start, end: end},
-                success: function(response) {
-                    // alert('Atividade cadastrada com sucesso!')
-                    Swal.fire(
-                        'Atividade registrada!',
-                        name + ' no dia ' + moment(date_activity).format('DD/MM/YYYY') 
-                        + ' as ' + start + ' até ' + end,
-                        'success'
-                    )
-                    setTimeout([
-                        location.reload()
-                    ],2000)
-                },
-                error: function(xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-            return false;
-    });
-
-
-
-
-
-
-
-
-
-})
-
-        
-</script>
+<script src="js/index.js"></script>
 </html>

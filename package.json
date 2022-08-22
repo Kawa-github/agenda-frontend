@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "fullcalendar": "^5.11.2",
+    "jquery": "^3.6.0",
     "sweetalert2": "^11.4.28"
   }
 }
